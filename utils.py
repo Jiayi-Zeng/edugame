@@ -1,4 +1,4 @@
-import yaml
+import json
 import streamlit as st
 
 def get_api_key():
@@ -6,8 +6,21 @@ def get_api_key():
         return file.read().strip()
 
 def get_roadmap():
-    with open('config/roadmap.yaml', 'r', encoding='utf-8') as file:
-        return yaml.safe_load(file)
+    with open('config/roadmap.json', 'r', encoding='utf-8') as file:
+        return json.load(file)
+
+def save_roadmap(data):
+    with open('config/roadmap.json', 'w', encoding='utf-8') as file:
+        json.dump(data, file, ensure_ascii=False, indent=4)
+
+def reset_roadmap():
+    data = get_roadmap()
+    for index in data:
+        for key in data[index]:
+            if "stage" in data[index][key]:
+                data[index][key]["stage"] = "Ready"
+                data[index][key]["history"] = None
+    save_roadmap(data)
     
 STAGE_COLORS = {
     "Lock": "rgba(206, 205, 202, 0.5)",
@@ -16,14 +29,13 @@ STAGE_COLORS = {
     "Done": "rgba(140, 46, 0, 0.2)",
 }
 STAGE_SHORT_NAMES = {
-    "Lock" : "🔒Lock",
-    "Ready": "🔓 Ready",
-    "Studying": "👷 Studying",
-    "Done": "✅ Launched",
+    "Done": "✅ 完成",
+    "Lock" : "🔒 锁定",
+    "Ready": "🔓 准备",
 }
 
 STAGE = [
-    "Lock", "Ready", "Studying", "Done"
+    "Done", "Ready", "Lock"  
 ]
 
 PHASE = [
